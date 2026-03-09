@@ -33,8 +33,7 @@ export function createCheckContext(
       const timeout = options?.timeout || 30000
       
       try {
-        const proc = Bun.spawn(command, {
-          shell: true,
+        const proc = Bun.spawn(['sh', '-c', command], {
           timeout,
           stdout: 'pipe',
           stderr: 'pipe'
@@ -239,7 +238,7 @@ export function getFailedChecks(report: SelfCheckReport): CheckResult[] {
 /**
  * 获取警告的检查项
  */
-export function getWarningChecks(report: SelfResult): CheckResult[] {
+export function getWarningChecks(report: SelfCheckReport): CheckResult[] {
   return report.checks.filter(c => c.status === 'WARN')
 }
 

@@ -39,7 +39,8 @@
  *    ```
  */
 
-import type { Plugin, Hooks, Config } from '@opencode-ai/plugin'
+import type { Plugin, Hooks } from '@opencode-ai/plugin'
+import type { Config } from '@opencode-ai/sdk'
 import { DEFAULT_CONFIG, type HealthGuardConfig } from './types'
 import { runSelfCheck, formatReport } from './engine'
 
@@ -57,7 +58,7 @@ export const VERSION = '1.0.0'
  * Health Guard 插件
  */
 const healthGuardPlugin: Plugin = async (input) => {
-  const { client, project, directory, log } = input
+  const { client, project, directory } = input
   
   // 合并配置
   const config: HealthGuardConfig = {
@@ -66,11 +67,11 @@ const healthGuardPlugin: Plugin = async (input) => {
   }
   
   if (!config.enabled) {
-    log(`[${PLUGIN_ID}] 插件已禁用`)
+    console.log(`[${PLUGIN_ID}] 插件已禁用`)
     return {}
   }
   
-  log(`[${PLUGIN_ID}] 🛡️ Health Guard v${VERSION} 已加载`)
+  console.log(`[${PLUGIN_ID}] 🛡️ Health Guard v${VERSION} 已加载`)
   
   const hooks: Hooks = {
     /**
@@ -82,7 +83,7 @@ const healthGuardPlugin: Plugin = async (input) => {
           return
         }
         
-        log(`[${PLUGIN_ID}] 开始自检...`)
+        console.log(`[${PLUGIN_ID}] 开始自检...`)
         
         try {
           const report = await runSelfCheck(config, 'startup')
@@ -93,7 +94,7 @@ const healthGuardPlugin: Plugin = async (input) => {
           
           // 如果阻塞，发送警告通知
           if (report.blocked) {
-            log(`[${PLUGIN_ID}] ⚠️ 自检失败，发现 ${report.failed} 个问题`)
+            console.log(`[${PLUGIN_ID}] ⚠️ 自检失败，发现 ${report.failed} 个问题`)
             
             // 可以通过 client 发送通知
             // await client.toast.show({
@@ -102,11 +103,11 @@ const healthGuardPlugin: Plugin = async (input) => {
             //   variant: 'error'
             // })
           } else {
-            log(`[${PLUGIN_ID}] ✅ 自检通过`)
+            console.log(`[${PLUGIN_ID}] ✅ 自检通过`)
           }
           
         } catch (e) {
-          log(`[${PLUGIN_ID}] ❌ 自检异常: ${e}`, 'error')
+          console.error(`[${PLUGIN_ID}] ❌ 自检异常: ${e}`)
         }
       }
     },
@@ -119,7 +120,7 @@ const healthGuardPlugin: Plugin = async (input) => {
         return
       }
       
-      log(`[${PLUGIN_ID}] 检测到配置更新，执行自检...`)
+      console.log(`[${PLUGIN_ID}] 检测到配置更新，执行自检...`)
       
       try {
         const report = await runSelfCheck(config, 'reload')
@@ -128,11 +129,11 @@ const healthGuardPlugin: Plugin = async (input) => {
         console.error(formatted)
         
         if (report.blocked) {
-          log(`[${PLUGIN_ID}] ⚠️ 配置更新后自检失败`)
+        console.log(`[${PLUGIN_ID}] ⚠️ 配置更新后自检失败`)
         }
         
       } catch (e) {
-        log(`[${PLUGIN_ID}] ❌ 自检异常: ${e}`, 'error')
+        console.error(`[${PLUGIN_ID}] ❌ 自检异常: ${e}`)
       }
     }
   }
