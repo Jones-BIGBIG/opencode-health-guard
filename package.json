@@ -1,5 +1,5 @@
 {
-  "name": "@opencode-ai/health-guard",
+  "name": "@jones-bigbig/opencode-health-guard",
   "version": "1.0.0",
   "description": "Boot-Time Self-Check Gateway for OpenCode - 启动前健康检查插件",
   "type": "module",
